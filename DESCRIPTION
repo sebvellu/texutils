@@ -1,0 +1,11 @@
+Package: texutils
+Title: Utilities for LaTeX Output
+Version: 0.0.0.9000
+Authors@R: 
+    person("Sebastian", "Veldhuis", , "sebvellu@outlook.com", role = c("aut", "cre"))
+Description: Provides utility functions for formatting R output for use in
+    LaTeX documents.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
