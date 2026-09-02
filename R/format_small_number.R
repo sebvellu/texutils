@@ -28,7 +28,7 @@ format_small_number <- function(x, threshold = 0.001, digits = 4) {
         x <- as.matrix(x)
     }
 
-    out <- as.character(x)
+    out <- formatC(x, format = "f", digits = digits)
 
     idx <- !is.na(x) & x != 0 & abs(x) < threshold
 
@@ -38,14 +38,18 @@ format_small_number <- function(x, threshold = 0.001, digits = 4) {
         rest <- signif(abs(z) * 10^(n_zero + 1), digits)
 
         paste0(
+            "$",
             if (z < 0) "-" else "",
             "0.0^{", n_zero, "}",
-            format(rest, scientific = FALSE, trim = TRUE)
+            format(rest, scientific = FALSE, trim = TRUE),
+            "$"
         )
     }, character(1))
 
-    dim(out) <- dim(x)
-    dimnames(out) <- dimnames(x)
+    if (!is.null(dim(x))) {
+        dim(out) <- dim(x)
+        dimnames(out) <- dimnames(x)
+    }
 
     out
 }
