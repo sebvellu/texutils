@@ -9,8 +9,10 @@
 #' Values whose absolute value is smaller than `threshold` are represented
 #' in the form `0.0^{n}d`, where `n` is the number of leading zeros after
 #' the decimal point and `d` contains `small_digits` digits following these
-#' zeros. For example, `0.0003927` is represented as `0.0^{3}39` when
-#' `small_digits = 2`.
+#' zeros.
+#'
+#' For example, `0.00003927` is represented as `0.0^{4}39` when
+#' `small_digits = 2`, and as `0.0^{4}3927` when `small_digits = 4`.
 #'
 #' Values not represented using the compact notation are formatted to
 #' `digits` decimal places.
@@ -36,7 +38,7 @@
 #'
 #' @examples
 #' format_small_number(
-#'     c(0.0123, 0.000412, 0.00004),
+#'     c(0.0123, 0.000412, 0.00003927),
 #'     threshold = 0.001,
 #'     digits = 4,
 #'     small_digits = 2
@@ -57,11 +59,11 @@ format_small_number <- function(x, threshold = 0.001, digits = 4,
 
     out[idx] <- vapply(x[idx], function(z) {
 
-        n_zero <- floor(-log10(abs(z))) - 1
+        n_zero <- ceiling(-log10(abs(z))) - 1
 
         rest <- sprintf(
             paste0("%0", small_digits, "d"),
-            round(abs(z) * 10^(n_zero + small_digits + 1))
+            round(abs(z) * 10^(n_zero + small_digits))
         )
 
         temp <- paste0(
@@ -70,7 +72,11 @@ format_small_number <- function(x, threshold = 0.001, digits = 4,
             rest
         )
 
-        if (math) paste0("$", temp, "$") else temp
+        if (math) {
+            paste0("$", temp, "$")
+        } else {
+            temp
+        }
 
     }, character(1))
 

@@ -42,15 +42,17 @@ superscript.
 Values whose absolute value is smaller than \code{threshold} are represented
 in the form \verb{0.0^\{n\}d}, where \code{n} is the number of leading zeros after
 the decimal point and \code{d} contains \code{small_digits} digits following these
-zeros. For example, \code{0.0003927} is represented as \verb{0.0^\{3\}39} when
-\code{small_digits = 2}.
+zeros.
+
+For example, \code{0.00003927} is represented as \verb{0.0^\{4\}39} when
+\code{small_digits = 2}, and as \verb{0.0^\{4\}3927} when \code{small_digits = 4}.
 
 Values not represented using the compact notation are formatted to
 \code{digits} decimal places.
 }
 \examples{
 format_small_number(
-    c(0.0123, 0.000412, 0.00004),
+    c(0.0123, 0.000412, 0.00003927),
     threshold = 0.001,
     digits = 4,
     small_digits = 2
