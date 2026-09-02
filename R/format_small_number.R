@@ -1,28 +1,51 @@
 #' Format small numbers for LaTeX output
 #'
-#' This function formats sufficiently small nonzero numbers using a compact
-#' LaTeX notation in which the number of leading zeros after the decimal
-#' point is indicated by a superscript.
+#' Formats numeric values to a fixed number of decimal places and represents
+#' sufficiently small nonzero values using a compact LaTeX notation in which
+#' the number of leading zeros after the decimal point is indicated by a
+#' superscript.
 #'
-#' @param x A numeric vector, matrix, or array.
+#' @details
+#' Values whose absolute value is smaller than `threshold` are represented
+#' in the form `0.0^{n}d`, where `n` is the number of leading zeros after
+#' the decimal point and `d` contains `small_digits` digits following these
+#' zeros. For example, `0.0003927` is represented as `0.0^{3}39` when
+#' `small_digits = 2`.
+#'
+#' Values not represented using the compact notation are formatted to
+#' `digits` decimal places.
+#'
+#' @param x A numeric vector, matrix, array, or data frame.
 #'
 #' @param threshold A positive number specifying the threshold below which
-#'   values are displayed using compact notation.
+#'   nonzero values are displayed using compact notation.
 #'
-#' @param digits A non-negative integer specifying the number of significant
-#'   digits retained in the nonzero part.
+#' @param digits A non-negative integer specifying the number of decimal
+#'   places used for values not displayed using compact notation.
+#'
+#' @param small_digits A positive integer specifying the number of digits
+#'   retained after the leading zeros for values displayed using compact
+#'   notation.
+#'
+#' @param math Logical. If `TRUE`, values displayed using compact notation
+#'   are enclosed in `$...$` for use in LaTeX math mode.
 #'
 #' @return
-#' A character object with the same dimensions as `x`, containing the
-#' formatted values.
+#' A character object containing the formatted values. For matrices, arrays,
+#' and data frames, the dimensions and dimension names of `x` are preserved.
 #'
 #' @examples
-#' format_small_number(c(0.0123, 0.000412, 0.00004),
-#'                     threshold = 0.001)
+#' format_small_number(
+#'     c(0.0123, 0.000412, 0.00004),
+#'     threshold = 0.001,
+#'     digits = 4,
+#'     small_digits = 2
+#' )
 #'
 #' @export
 
-format_small_number <- function(x, threshold = 0.001, digits = 4) {
+format_small_number <- function(x, threshold = 0.001, digits = 4,
+                                small_digits = digits, math = TRUE) {
 
     if (is.data.frame(x)) {
         x <- as.matrix(x)
@@ -35,15 +58,20 @@ format_small_number <- function(x, threshold = 0.001, digits = 4) {
     out[idx] <- vapply(x[idx], function(z) {
 
         n_zero <- floor(-log10(abs(z))) - 1
-        rest <- signif(abs(z) * 10^(n_zero + 1), digits)
 
-        paste0(
-            "$",
+        rest <- sprintf(
+            paste0("%0", small_digits, "d"),
+            round(abs(z) * 10^(n_zero + small_digits + 1))
+        )
+
+        temp <- paste0(
             if (z < 0) "-" else "",
             "0.0^{", n_zero, "}",
-            format(rest, scientific = FALSE, trim = TRUE),
-            "$"
+            rest
         )
+
+        if (math) paste0("$", temp, "$") else temp
+
     }, character(1))
 
     if (!is.null(dim(x))) {

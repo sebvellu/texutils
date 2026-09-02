@@ -4,28 +4,56 @@
 \alias{format_small_number}
 \title{Format small numbers for LaTeX output}
 \usage{
-format_small_number(x, threshold = 0.001, digits = 4)
+format_small_number(
+  x,
+  threshold = 0.001,
+  digits = 4,
+  small_digits = digits,
+  math = TRUE
+)
 }
 \arguments{
-\item{x}{A numeric vector, matrix, or array.}
+\item{x}{A numeric vector, matrix, array, or data frame.}
 
 \item{threshold}{A positive number specifying the threshold below which
-values are displayed using compact notation.}
+nonzero values are displayed using compact notation.}
 
-\item{digits}{A non-negative integer specifying the number of significant
-digits retained in the nonzero part.}
+\item{digits}{A non-negative integer specifying the number of decimal
+places used for values not displayed using compact notation.}
+
+\item{small_digits}{A positive integer specifying the number of digits
+retained after the leading zeros for values displayed using compact
+notation.}
+
+\item{math}{Logical. If \code{TRUE}, values displayed using compact notation
+are enclosed in \verb{$...$} for use in LaTeX math mode.}
 }
 \value{
-A character object with the same dimensions as \code{x}, containing the
-formatted values.
+A character object containing the formatted values. For matrices, arrays,
+and data frames, the dimensions and dimension names of \code{x} are preserved.
 }
 \description{
-This function formats sufficiently small nonzero numbers using a compact
-LaTeX notation in which the number of leading zeros after the decimal
-point is indicated by a superscript.
+Formats numeric values to a fixed number of decimal places and represents
+sufficiently small nonzero values using a compact LaTeX notation in which
+the number of leading zeros after the decimal point is indicated by a
+superscript.
+}
+\details{
+Values whose absolute value is smaller than \code{threshold} are represented
+in the form \verb{0.0^\{n\}d}, where \code{n} is the number of leading zeros after
+the decimal point and \code{d} contains \code{small_digits} digits following these
+zeros. For example, \code{0.0003927} is represented as \verb{0.0^\{3\}39} when
+\code{small_digits = 2}.
+
+Values not represented using the compact notation are formatted to
+\code{digits} decimal places.
 }
 \examples{
-format_small_number(c(0.0123, 0.000412, 0.00004),
-                    threshold = 0.001)
+format_small_number(
+    c(0.0123, 0.000412, 0.00004),
+    threshold = 0.001,
+    digits = 4,
+    small_digits = 2
+)
 
 }
