@@ -24,6 +24,10 @@
 
 format_small_number <- function(x, threshold = 0.001, digits = 4) {
 
+    if (is.data.frame(x)) {
+        x <- as.matrix(x)
+    }
+
     out <- as.character(x)
 
     idx <- !is.na(x) & x != 0 & abs(x) < threshold
@@ -39,6 +43,9 @@ format_small_number <- function(x, threshold = 0.001, digits = 4) {
             format(rest, scientific = FALSE, trim = TRUE)
         )
     }, character(1))
+
+    dim(out) <- dim(x)
+    dimnames(out) <- dimnames(x)
 
     out
 }
